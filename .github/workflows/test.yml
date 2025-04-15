@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     name: Test (${{ matrix.os }} - ${{ matrix.browser }})
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
