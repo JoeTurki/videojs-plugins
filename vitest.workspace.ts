@@ -1,5 +1,7 @@
 import { defineWorkspace } from 'vitest/config';
 
+const browser = process.env.TEST_BROWSER || 'chrome';
+
 export default defineWorkspace([
   {
     extends: './vitest.config.ts',
@@ -10,10 +12,7 @@ export default defineWorkspace([
         provider: 'webdriverio',
         headless: process.env.TEST_HEADLESS !== 'false',
         instances: [
-          { name: 'chrome', browser: 'chrome' },
-          { name: 'firefox', browser: 'firefox' },
-          { name: 'edge', browser: 'edge' },
-          { name: 'safari', browser: 'safari' },
+          { name: browser, browser },
         ],
         viewport: {
           width: 1920,

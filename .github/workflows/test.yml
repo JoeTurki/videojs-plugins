@@ -54,7 +54,6 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm run test:browser
+        run: npm run test:${{ matrix.browser }}
         env:
-          TEST_BROWSER: ${{ matrix.browser }}
           TEST_HEADLESS: true
