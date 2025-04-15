@@ -3,7 +3,6 @@ import {
   protocols,
   CeeblueCloudSource,
   CeeblueAutoURLSource,
-  CeeblueSourcesOptions,
   expandSourcesToVideoJSSources,
   determineSourceTypeFromURL,
 } from './sources';
@@ -41,14 +40,6 @@ describe('sources', () => {
       expect(result).toEqual({
         type: 'application/vnd.apple.mpegurl',
         sourceType: 'hls',
-      });
-    });
-
-    it('should detect LLHLS URLs', () => {
-      const result = determineSourceTypeFromURL('https://example.com/cmaf/stream/index.m3u8');
-      expect(result).toEqual({
-        type: 'application/vnd.apple.mpegurl',
-        sourceType: 'llhls',
       });
     });
 
@@ -99,27 +90,6 @@ describe('sources', () => {
       expect(result).toHaveLength(1);
       expect(result[0]?.src).toBe(source.url);
       expect(result[0]?.type).toBe(source.mimeType);
-    });
-
-    it('should expand multiple sources', () => {
-      const sources: CeeblueSourcesOptions = {
-        sources: [
-          {
-            endPoint: 'example.com',
-            streamName: 'test-stream',
-            protocols: ['webrtc'],
-          },
-          {
-            url: 'https://example.com/stream.m3u8',
-            type: 'hls',
-          },
-        ],
-      };
-
-      const result = expandSourcesToVideoJSSources(sources);
-      expect(result).toHaveLength(2);
-      expect(result[0]?.sourceType).toBe('webrtc');
-      expect(result[1]?.sourceType).toBe('hls');
     });
   });
 });

@@ -43,7 +43,7 @@
     "lint": "npx eslint src/*/**.js scripts/*.js",
     "server": "karma start scripts/karma.conf.js --singleRun=false --auto-watch",
     "start": "npm-run-all -p server watch",
-    "test": "vitest run",
+    "test": "vitest run --project ci",
     "test:browser": "vitest run --project browser",
     "test:chrome": "cross-env TEST_BROWSER=chrome vitest run --project browser",
     "test:firefox": "cross-env TEST_BROWSER=firefox vitest run --project browser",
