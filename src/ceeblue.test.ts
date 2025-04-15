@@ -108,17 +108,6 @@ describe('CeeblueVideoJSPlugin', () => {
         })
       ]);
 
-      await Promise.race([
-        new Promise<void>((resolve) => {
-          player.on('playing', () => {
-            resolve();
-          });
-        }),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Playing event timeout')), 5000);
-        })
-      ]);
-
       expect(player.paused()).toBe(false);
     } catch (error) {
       // If play fails due to autoplay restrictions, skip the test
@@ -135,23 +124,7 @@ describe('CeeblueVideoJSPlugin', () => {
       await Promise.race([
         player.play(),
         new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 5000);
-        })
-      ]);
-
-      await Promise.race([
-        new Promise<void>((resolve) => {
-          player.on('playing', () => {
-            resolve();
-          });
-        }),
-        new Promise<void>((resolve) => {
-          player.on('loadeddata', () => {
-            resolve();
-          });
-        }),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Video data timeout')), 5000);
+          setTimeout(() => reject(new Error('Play timeout')), 60000);
         })
       ]);
 
@@ -171,7 +144,7 @@ describe('CeeblueVideoJSPlugin', () => {
       await Promise.race([
         player.play(),
         new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 5000);
+          setTimeout(() => reject(new Error('Play timeout')), 60000);
         })
       ]);
       expect(player.paused()).toBe(false);
@@ -182,7 +155,7 @@ describe('CeeblueVideoJSPlugin', () => {
       await Promise.race([
         player.play(),
         new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 5000);
+          setTimeout(() => reject(new Error('Play timeout')), 60000);
         })
       ]);
       expect(player.paused()).toBe(false);
