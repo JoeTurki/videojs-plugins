@@ -56,4 +56,4 @@ jobs:
       - name: Run tests
         run: npm run test:${{ matrix.browser }}
         env:
-          TEST_HEADLESS: true
+          TEST_HEADLESS: ${{ matrix.browser != 'safari' }}
