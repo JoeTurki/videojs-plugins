@@ -13,15 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        browser:
-          - name: chrome
-            os: [ubuntu-latest, windows-latest]
-          - name: firefox
-            os: [ubuntu-latest]
-          - name: edge
-            os: [windows-latest]
-          - name: safari
-            os: [macos-latest]
+        browser: [chrome, firefox, edge, safari]
         include:
           - os: ubuntu-latest
             browser: chrome
