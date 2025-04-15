@@ -13,7 +13,7 @@ const WebRTCSourceHandler = {
   name: 'ceeblue/videojs-plugins',
   VERSION: __libVersion__,
   canHandleSource(srcObj: VideojsSourceObject) {
-    let type: string | undefined = srcObj.type;
+    let type: string | void = srcObj.type;
 
     if (!type) {
       type = determineSourceTypeFromURL(srcObj.src)?.type;
@@ -30,14 +30,13 @@ const WebRTCSourceHandler = {
 
     return webrtcSource;
   },
-  canPlayType(type: string | undefined) {
+  canPlayType(type: string | void) {
     // If the type is not defined we try to handle it, anyway!
     // This is to keep compatibility with the previous version of the plugin.
     // When the source is provided through player.src() method!
     if (!type) {
       return 'maybe';
     }
-    console.log(type);
 
     switch (type) {
       case ceeblueSignalingMimeType:

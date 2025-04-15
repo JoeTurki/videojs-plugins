@@ -1,10 +1,9 @@
 import videojs from 'video.js';
-import { Player, WSController, HTTPConnector } from '@ceeblue/webrtc-client';
+import { Player as WebRTCPlayer, WSController, HTTPConnector, Metadata } from '@ceeblue/webrtc-client';
 import { WebRTCTracksController } from '../controllers/WebRTCTracksController';
 import type Tech from 'video.js/dist/types/tech/tech';
-import type { VideojsSourceObject, VideojsWebRTCSourceObject } from './sources';
-const Component = videojs.getComponent('Component');
-
+import type { VideojsWebRTCSourceObject } from './sources';
+import type Player from 'video.js/dist/types/player';
 export type WebRTCSourceOptions = {
   readonly playerId: string;
 }
@@ -13,32 +12,51 @@ export type WebRTCSourceOptions = {
  * An advanced Video.js plugin for playing WebRTC stream from Ceeblue cloud.
  *
  */
-export class WebRTCSource extends Component {
+export class WebRTCSource {
   /**
    * The WebRTC player instance.
    * Destroyed when the source is disposed.
    */
-  webRTCPlayer?: Player | void;
+  webRTCPlayer: WebRTCPlayer;
 
   /**
-   * The source object.
+   * WebRTC source settings.
    */
-  private readonly _source: VideojsSourceObject;
+  get source() {
+    return this._source;
+  }
+
+  /**
+   * Video.js player instance.
+   */
+  get player() {
+    return this._player;
+  }
 
   /**
    * The tracks controller instance.
    */
-  private _tracksController?: WebRTCTracksController | void;
+  private readonly _tracksController: WebRTCTracksController;
 
   /**
    * Abort controller to stop the WebRTC player.
    */
-  private _abortController?: AbortController | void;
+  private readonly _abortController: AbortController;
 
   /**
    * Video.js tech object.
    */
-  private _tech: Tech;
+  private readonly _tech: Tech;
+
+  /**
+   * Source options.
+   */
+  private readonly _source: VideojsWebRTCSourceObject;
+
+  /**
+   * Video.js player instance.
+   */
+  private readonly _player: Player;
 
   /**
    * Create a WebRTC source handler instance.
@@ -49,38 +67,66 @@ export class WebRTCSource extends Component {
    * @param options The videojs options object
    */
   constructor(source: VideojsWebRTCSourceObject, tech: Tech, options: WebRTCSourceOptions) {
-    super(tech.player());
-
-    this._source = source;
     this._tech = tech;
+    this._player = videojs(options.playerId);
+    this._source = source;
 
-    // Check RTCPPeerConnection support
+    // Check RTCPeerConnection support
     if (!window.RTCPeerConnection) {
-      this.player().error('WebRTC is not supported by this browser');
+      const error = new Error('WebRTC is not supported by this browser');
 
-      return;
+      this.player.error(error.message);
+      throw error;
     }
 
     if (typeof source.src !== 'string') {
-      this.player().error('Invalid WebRTC source');
+      const error = new TypeError('Invalid WebRTC source');
 
-      return;
+      this.player.error(error.message);
+      throw error;
     }
 
     this._abortController = new AbortController();
-    this.webRTCPlayer = new Player(source.src.startsWith('http') ? HTTPConnector : WSController);
-    this.webRTCPlayer.on('start', this._handleStart.bind(this), this._abortController);
-    this.webRTCPlayer.on('stop', this._handleStop.bind(this), this._abortController);
-    // @ts-expect-error - metadata is not defined on Player.
-    this.webRTCPlayer.onError = this._onError;
+    this.webRTCPlayer = new WebRTCPlayer(source.src.startsWith('http') ? HTTPConnector : WSController);
+    this.webRTCPlayer.on('start', this._handleStart.bind(this));
+    this.webRTCPlayer.on('stop', this._handleStop.bind(this));
+    this.webRTCPlayer.on('metadata', this._handleMetadata.bind(this));
+
+    // temporary fix
+    const url = new URL(source.src);
+
     this.webRTCPlayer.start({
-      endPoint: source.src,
-      streamName: '',
+      endPoint: url.hostname,
+      streamName: url.pathname.split('/').pop() ?? '',
       iceServer: source?.iceServers?.[0] ?? this.defaultICEServer(source.src),
     });
 
     // Create the tracks controller
     this._tracksController = new WebRTCTracksController(this);
+  }
+
+  /**
+   * Handle pause event from video.js player
+   */
+  _handlePause() {
+    if (this.webRTCPlayer) {
+      const vid = this._tech?.el?.() as HTMLVideoElement;
+      if (vid) {
+        vid.pause();
+      }
+    }
+  }
+
+  /**
+   * Handle play event from video.js player
+   */
+  _handlePlay() {
+    if (this.webRTCPlayer) {
+      const vid = this._tech?.el?.() as HTMLVideoElement;
+      if (vid) {
+        vid.play();
+      }
+    }
   }
 
   /**
@@ -101,44 +147,33 @@ export class WebRTCSource extends Component {
    * Handle webRTCPlayer start event.
    */
   _handleStart(stream: MediaProvider) {
-    console.log(this.player);
     const vid = this._tech?.el?.() as HTMLVideoElement;
 
     if (vid.srcObject !== stream) {
       vid.srcObject = stream;
     }
 
-    this.player().trigger('play');
+    this.player.trigger('play');
   }
 
   /**
    * Handle webRTCPlayer stop event.
    */
   _handleStop() {
-    this.player().trigger('ended');
+    this.player.trigger('ended');
   }
-
-  /**
-   * Handle webRTCPlayer playing event.
-   */
-  _handlePlaying(playing: boolean) { }
 
   /**
    * Handle webRTCPlayer metadata event.
    */
-  _handleMetadata(metadata: unknown) {
+  _handleMetadata(metadata: Metadata) {
     this._tracksController?.update(metadata);
-  }
 
-  /**
-   * Handle webRTCPlayer error event.
-   */
-  _onError(error: unknown) {
-    videojs.log.error(error);
-    if (error === 'Stream is offline') {
-      // Trigger onended event
-      this.player().trigger('ended');
+    const dataTracks = [];
+    for (const track of metadata.datas) {
+        dataTracks.push(track.idx);
     }
+    this.webRTCPlayer.dataTracks = dataTracks;
   }
 
   /**
@@ -146,16 +181,12 @@ export class WebRTCSource extends Component {
    */
   dispose() {
     if (this.webRTCPlayer) {
-      this._abortController?.abort();
-      this.webRTCPlayer?.stop();
-      delete this.webRTCPlayer;
+      this._abortController.abort();
+      this.webRTCPlayer.stop();
     }
 
     if (this._tracksController) {
-      this._tracksController.reset();
-      delete this._tracksController;
+      this._tracksController.dispose();
     }
-
-    super.dispose();
   }
 }

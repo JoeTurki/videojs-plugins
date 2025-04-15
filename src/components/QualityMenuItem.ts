@@ -11,6 +11,7 @@ export type QualityMenuItemOptions = {
   label: string;
   value: string;
   selected: boolean;
+  enabled?: boolean;
   quality?: QualityLevel;
   selectable?: boolean;
   multiSelectable?: boolean;

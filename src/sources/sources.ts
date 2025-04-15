@@ -1,5 +1,3 @@
-
-
 export const protocols = ['webrtc', 'llhls', 'hls', 'dash'] as const;
 
 type protocol = typeof protocols[number];
@@ -38,7 +36,7 @@ export type CeeblueCloudSource = {
  * Ceeblue video sources settings.
  */
 type CeeblueSourcesSettings = {
-  webertc?: CeeblueWebRTCSettings;
+  webrtc?: CeeblueWebRTCSettings;
   hls?: CeeblueCloudHLSSettings;
 };
 
@@ -145,6 +143,8 @@ export type VideojsWebRTCSourceObject = {
   type?: 'application/sdp' | typeof ceeblueSignalingMimeType;
   sourceType: 'webrtc';
   iceServers?: RTCIceServer[];
+  audiobutton?: boolean | string;
+  data?: boolean | string;
 }
 
 /**
@@ -182,7 +182,7 @@ type CeeblueDeterminedSourceType = {
  * Determine the source type and mime type from just Ceeblue source.
  * This is based on how we build and handle media URLs at Ceeblue.
  */
-export function determineSourceTypeFromURL(src: string): CeeblueDeterminedSourceType | undefined {
+export function determineSourceTypeFromURL(src: string): CeeblueDeterminedSourceType | void {
   try {
     const url = new URL(src);
 
@@ -333,7 +333,7 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
 function buildWebRTCSource(source: CeeblueCloudSource): VideojsWebRTCSourceObject {
   let protocol = 'wss';
   let mimeType: VideojsWebRTCSourceObject['type'] = ceeblueSignalingMimeType;
-  if (source.settings?.webertc?.signaling === 'whip') {
+  if (source.settings?.webrtc?.signaling === 'whip') {
     protocol = 'https';
     mimeType = 'application/sdp';
   }
@@ -342,7 +342,7 @@ function buildWebRTCSource(source: CeeblueCloudSource): VideojsWebRTCSourceObjec
     src: `${protocol}://${source.endPoint}/webrtc/${source.streamName}`,
     sourceType: 'webrtc',
     type: mimeType,
-    iceServers: source.settings?.webertc?.iceServers,
+    iceServers: source.settings?.webrtc?.iceServers,
   }
 }
 

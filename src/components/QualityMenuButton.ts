@@ -74,13 +74,12 @@ export class QualityMenuButton extends MenuButton {
       label: 'Auto',
       value: 'auto',
       selected: isAuto,
-    }, isAuto));
+    }));
 
     // @ts-expect-error - QualityLevels is missing ArrayLike Type
     for (let i = 0; i < this.options_.qualities.length; i++) {
       // @ts-expect-error - QualityLevels is missing ArrayLike Type
       const quality = this.options_.qualities[i];
-      const isSelected = this.selectedQuality?.deref() === quality;
 
       const trackItem = this._createMenuItem({
         label: quality.height + 'p',
@@ -88,7 +87,7 @@ export class QualityMenuButton extends MenuButton {
         // Note: with VHS quality.enable can be false even if it is the selected quality
         selected: !isAuto && quality.enabled,
         quality: quality
-      }, isSelected);
+      });
 
       menuItems.push(trackItem);
     }
@@ -126,12 +125,7 @@ export class QualityMenuButton extends MenuButton {
   /**
    * Create and initialize a menu item.
    */
-  private _createMenuItem(options: QualityMenuItemOptions, addSelectedCheck: boolean) {
-    // Temporary check until we make a theme!
-    if (addSelectedCheck) {
-      options.label += ' ✓';
-    }
-
+  private _createMenuItem(options: QualityMenuItemOptions) {
     const item = new QualityMenuItem(this.player_, options);
 
     item.addClass('vjs-ceeblue-quality-button');

@@ -207,7 +207,8 @@
               // Ceeblue specific options
               qualityButton: this.videobutton,
               retryCount: this.retryCount,
-              auto: this.auto
+              auto: this.auto,
+              muted: true // Ensure muted is set in player options
             }
 
             // Build the sources list with custom options for WebRTC
@@ -263,6 +264,15 @@
                 }
                 this.dataMessages += "[" + cue.startTime.toFixed(3) + "] " + cue.text + '\n';
               });
+            });
+            // Handle play promise properly
+            player.ready(() => {
+              const playPromise = player.play();
+              if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                  console.log('Playback failed:', error);
+                });
+              }
             });
           }
         },
