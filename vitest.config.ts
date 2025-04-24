@@ -10,8 +10,8 @@ export default defineConfig({
         '**/dist/**',
         '**/*.spec.ts',
         '**/*.test.ts',
-        '**/*.d.ts',
-      ],
+        '**/*.d.ts'
+      ]
     },
     globals: true,
     environment: 'jsdom',
@@ -41,5 +41,5 @@ export default defineConfig({
         }
       }
     }
-  },
+  }
 });

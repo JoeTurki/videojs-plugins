@@ -6,7 +6,6 @@ import type AudioTrack from 'video.js/dist/types/tracks/audio-track';
 import type Player from 'video.js/dist/types/player';
 import type QualityLevel from 'videojs-contrib-quality-levels/dist/types/quality-level';
 
-
 /**
  * Convert a bitrate in bps to a human readable string.
  *
@@ -31,7 +30,7 @@ export class WebRTCTracksController {
   private readonly _webRTCPlayer: WebRTCPlayer;
   private readonly _qualities: QualityLevelList & ArrayLike<QualityLevel>;
   private readonly _enableMap: Map<string, boolean>;
-  private  _videoTrack: number | undefined;
+  private _videoTrack: number | undefined;
   /**
    * Audio tracks, This is actually AudioTrackList but it's not exported from videojs!
    */
@@ -121,11 +120,12 @@ export class WebRTCTracksController {
       kind: 'main',
       label: 'AUTO',
       language: 'en',
-      enabled: true,
+      enabled: true
     }));
 
     let audioTrackCount = 0;
     let firstAudioTrack: videojs.AudioTrack | undefined = void 0;
+
     for (const [trackId, track] of metadata.tracks) {
       switch (track.type) {
       case 'video': {
@@ -229,9 +229,10 @@ export class WebRTCTracksController {
    */
   private _handleDataEvent(_: number, trackId: number, data: unknown): void {
     const track = this._textTracks.get(trackId);
+
     if (!track) {
-        return;
-      }
+      return;
+    }
 
     const currentTime = this._player.tech_.currentTime();
 

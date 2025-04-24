@@ -98,7 +98,7 @@ export class WebRTCSource {
     this.webRTCPlayer.start({
       endPoint: url.hostname,
       streamName: url.pathname.split('/').pop() ?? '',
-      iceServer: source?.iceServers?.[0] ?? this.defaultICEServer(source.src),
+      iceServer: source?.iceServers?.[0] ?? this.defaultICEServer(source.src)
     });
 
     // Create the tracks controller
@@ -111,6 +111,7 @@ export class WebRTCSource {
   _handlePause() {
     if (this.webRTCPlayer) {
       const vid = this._tech?.el?.() as HTMLVideoElement;
+
       if (vid) {
         vid.pause();
       }
@@ -123,6 +124,7 @@ export class WebRTCSource {
   _handlePlay() {
     if (this.webRTCPlayer) {
       const vid = this._tech?.el?.() as HTMLVideoElement;
+
       if (vid) {
         vid.play();
       }
@@ -139,7 +141,7 @@ export class WebRTCSource {
     return {
       urls: ['turn:' + url.hostname + ':3478?transport=tcp', 'turn:' + url.hostname + ':3478'],
       username: 'ceeblue',
-      credential: 'ceeblue',
+      credential: 'ceeblue'
     };
   }
 
@@ -170,8 +172,9 @@ export class WebRTCSource {
     this._tracksController?.update(metadata);
 
     const dataTracks = [];
+
     for (const track of metadata.datas) {
-        dataTracks.push(track.idx);
+      dataTracks.push(track.idx);
     }
     this.webRTCPlayer.dataTracks = dataTracks;
   }

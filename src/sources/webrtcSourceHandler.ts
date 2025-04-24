@@ -39,13 +39,13 @@ const WebRTCSourceHandler = {
     }
 
     switch (type) {
-      case ceeblueSignalingMimeType:
-      case 'application/sdp':
-        return 'probably';
-      default:
-        return '';
+    case ceeblueSignalingMimeType:
+    case 'application/sdp':
+      return 'probably';
+    default:
+      return '';
     }
-  },
+  }
 };
 
 export default WebRTCSourceHandler;

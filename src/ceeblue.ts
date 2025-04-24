@@ -115,6 +115,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
     this._gracePeriod = options.gracePeriod ?? 2000;
 
     const sources = expandSourcesToVideoJSSources(options);
+
     if (!sources.length) {
       throw new Error('Expected at least one source');
     }
@@ -136,6 +137,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
    */
   replaceOptions(options: CeeblueVideoJSPluginOptions) {
     const sources = expandSourcesToVideoJSSources(options);
+
     if (!sources.length) {
       throw new Error('Expected at least one source');
     }
@@ -198,6 +200,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
 
     // Initialize quality levels if not already done
     const qualityLevels = this._player.qualityLevels();
+
     if (!qualityLevels) {
       this._player.log.warn('Failed to initialize quality levels');
       return;
@@ -205,6 +208,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
 
     // @ts-expect-error - controlBar type is missing.
     const controlBar = this._player.controlBar;
+
     if (!controlBar) {
       this._player.log.warn('player.controlBar is not available, Skipping adding quality button');
       return;
@@ -219,11 +223,12 @@ export class CeeblueVideoJSPlugin extends Plugin {
     this._qualityButton = new QualityMenuButton(this._player, {
       title: 'Quality',
       qualities: qualityLevels,
-      buttonClass: 'vjs-video-button',
+      buttonClass: 'vjs-video-button'
     });
 
     // Add the button before the audio track button if it exists, otherwise add it to the end
     const audioTrackButton = controlBar.getChild('audioTrackButton');
+
     if (audioTrackButton) {
       controlBar.el().insertBefore(
         controlBar.addChild(this._qualityButton).el(),
@@ -246,7 +251,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
       this._player.one('loadedmetadata', () => {
         // Add a small delay to ensure quality levels are populated
         setTimeout(() => {
-         // this._addQualityButton();
+          // this._addQualityButton();
         }, 500);
       });
     }
@@ -310,10 +315,15 @@ export class CeeblueVideoJSPlugin extends Plugin {
    * Try the next source or ends if no more source is available.
    */
   _trySource() {
-    if (!this._sources.length) return;
+    if (!this._sources.length) {
+      return;
+    }
 
     const currentSource = this._sources[this._currentSourceIndex];
-    if (!currentSource) return;
+
+    if (!currentSource) {
+      return;
+    }
 
     // If we haven't exceeded max retries for current source, try again
     if (this._retryCount < this._maxRetries) {
@@ -328,14 +338,20 @@ export class CeeblueVideoJSPlugin extends Plugin {
 
     if (this._currentSourceIndex < this._sources.length) {
       const nextSource = this._sources[this._currentSourceIndex];
-      if (!nextSource) return;
+
+      if (!nextSource) {
+        return;
+      }
 
       this._setSource(nextSource);
     } else {
       // Reset to first source if we've tried all sources
       this._currentSourceIndex = 0;
       const firstSource = this._sources[0];
-      if (!firstSource) return;
+
+      if (!firstSource) {
+        return;
+      }
 
       this._setSource(firstSource);
     }
@@ -359,6 +375,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
    */
   setSource(options: { protocol: string } | number) {
     let index: number;
+
     if (typeof options === 'number') {
       index = options;
     } else {

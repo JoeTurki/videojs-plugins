@@ -20,8 +20,8 @@ export default defineWorkspace([
                 args: [
                   "--autoplay-policy=no-user-gesture-required",
                   "--enable-precise-memory-info",
-                  "--js-flags=--expose-gc",
-                ],
+                  "--js-flags=--expose-gc"
+                ]
               },
               "moz:firefoxOptions": {
                 prefs: {
@@ -30,11 +30,11 @@ export default defineWorkspace([
                   "media.autoplay.block-webaudio": false,
                   "media.autoplay.ask-permission": false,
                   "media.autoplay.block-event.enabled": false,
-                  "media.block-autoplay-until-in-foreground": false,
-                },
+                  "media.block-autoplay-until-in-foreground": false
+                }
               },
               "ms:edgeOptions": {
-                args: ["--autoplay-policy=no-user-gesture-required"],
+                args: ["--autoplay-policy=no-user-gesture-required"]
               },
               "safari:autoplay": true
             }
@@ -42,15 +42,15 @@ export default defineWorkspace([
         ],
         viewport: {
           width: 1920,
-          height: 1080,
-        },
-      },
-    },
+          height: 1080
+        }
+      }
+    }
   },
   {
     extends: './vitest.config.ts',
     test: {
-      name: 'ci',
-    },
-  },
+      name: 'ci'
+    }
+  }
 ]);

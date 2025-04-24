@@ -73,7 +73,7 @@ export class QualityMenuButton extends MenuButton {
     menuItems.push(this._createMenuItem({
       label: 'Auto',
       value: 'auto',
-      selected: isAuto,
+      selected: isAuto
     }));
 
     // @ts-expect-error - QualityLevels is missing ArrayLike Type
@@ -141,6 +141,7 @@ export class QualityMenuButton extends MenuButton {
   private _isAutoSelected(qualities: QualityLevelList): boolean {
     let multipleEnabled = 0;
     // @ts-expect-error - QualityLevels is missing ArrayLike Type
+
     for (let j = 0; j < qualities.length; j++) {
       // @ts-expect-errort - QualityLevels is missing ArrayLike Type
       const qualityLevel = qualities[j] as QualityLevel;

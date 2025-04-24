@@ -20,7 +20,7 @@ describe('CeeblueVideoJSPlugin', () => {
     endPoint: 'fly.live.ceeblue.tv',
     streamName: 'out+de1e6f7c-e5db-450b-9603-c3644274779b',
     accessToken: '',
-    protocols: ['hls'],
+    protocols: ['hls']
   };
 
   beforeEach(() => {
@@ -100,71 +100,46 @@ describe('CeeblueVideoJSPlugin', () => {
   });
 
   it('should start playing when play() is called after user interaction', async () => {
-    try {
-      await Promise.race([
-        player.play(),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 5000);
-        })
-      ]);
+    await Promise.race([
+      player.play(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Play timeout')), 5000);
+      })
+    ]);
 
-      expect(player.paused()).toBe(false);
-    } catch (error) {
-      // If play fails due to autoplay restrictions, skip the test
-      if (error instanceof Error && error.message.includes('user interaction')) {
-        console.warn('Skipping play test due to autoplay restrictions');
-        return;
-      }
-      throw error;
-    }
+    expect(player.paused()).toBe(false);
   });
 
   it('should receive video data when playing', async () => {
-    try {
-      await Promise.race([
-        player.play(),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 60000);
-        })
-      ]);
+    await Promise.race([
+      player.play(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Play timeout')), 60000);
+      })
+    ]);
 
-      expect(player.readyState()).toBeGreaterThan(0);
-      expect(player.currentTime()).toBeGreaterThanOrEqual(0);
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('user interaction')) {
-        console.warn('Skipping video data test due to autoplay restrictions');
-        return;
-      }
-      throw error;
-    }
+    expect(player.readyState()).toBeGreaterThan(0);
+    expect(player.currentTime()).toBeGreaterThanOrEqual(0);
   });
 
   it('should handle play/pause controls', async () => {
-    try {
-      await Promise.race([
-        player.play(),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 60000);
-        })
-      ]);
-      expect(player.paused()).toBe(false);
+    await Promise.race([
+      player.play(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Play timeout')), 60000);
+      })
+    ]);
+    expect(player.paused()).toBe(false);
 
-      player.pause();
-      expect(player.paused()).toBe(true);
+    player.pause();
+    expect(player.paused()).toBe(true);
 
-      await Promise.race([
-        player.play(),
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Play timeout')), 60000);
-        })
-      ]);
-      expect(player.paused()).toBe(false);
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('user interaction')) {
-        console.warn('Skipping play/pause test due to autoplay restrictions');
-        return;
-      }
-      throw error;
-    }
+    await Promise.race([
+      player.play(),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Play timeout')), 60000);
+      })
+    ]);
+    expect(player.paused()).toBe(false);
   });
 });

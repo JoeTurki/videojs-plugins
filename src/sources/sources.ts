@@ -3,6 +3,42 @@ export const protocols = ['webrtc', 'llhls', 'hls', 'dash'] as const;
 type protocol = typeof protocols[number];
 
 /**
+ * Ceeblue Cloud HLS source settings.
+ */
+export type CeeblueCloudHLSSettings = {
+  /**
+   * HLS format.
+   *
+   * @default 'cmaf'
+   */
+  format?: 'cmaf' | 'ts';
+}
+
+/**
+ * WebRTC Source settings.
+ */
+export type CeeblueWebRTCSettings = {
+  /**
+   * signaling server protocol, ceeblue-ws for ceeblue websocket based signaling protocol.
+   *
+   * @default 'ceeblue-ws'
+   */
+  signaling?: 'ceeblue-ws' | 'whip';
+  /**
+   * ICE server configuration.
+   */
+  iceServers?: RTCIceServer[];
+}
+
+/**
+ * Ceeblue video sources settings.
+ */
+type CeeblueSourcesSettings = {
+  webrtc?: CeeblueWebRTCSettings;
+  hls?: CeeblueCloudHLSSettings;
+};
+
+/**
  * Ceeblue Cloud source types.
  */
 export type CeeblueCloudSource = {
@@ -30,42 +66,6 @@ export type CeeblueCloudSource = {
    */
   query?: URLSearchParams;
   settings?: CeeblueSourcesSettings;
-}
-
-/**
- * Ceeblue video sources settings.
- */
-type CeeblueSourcesSettings = {
-  webrtc?: CeeblueWebRTCSettings;
-  hls?: CeeblueCloudHLSSettings;
-};
-
-/**
- * Ceeblue Cloud HLS source settings.
- */
-export type CeeblueCloudHLSSettings = {
-  /**
-   * HLS format.
-   *
-   * @default 'cmaf'
-   */
-  format?: 'cmaf' | 'ts';
-}
-
-/**
- * WebRTC Source settings.
- */
-export type CeeblueWebRTCSettings = {
-  /**
-   * signaling server protocol, ceeblue-ws for ceeblue websocket based signaling protocol.
-   *
-   * @default 'ceeblue-ws'
-   */
-  signaling?: 'ceeblue-ws' | 'whip';
-  /**
-   * ICE server configuration.
-   */
-  iceServers?: RTCIceServer[];
 }
 
 /**
@@ -193,38 +193,41 @@ export function determineSourceTypeFromURL(src: string): CeeblueDeterminedSource
     if (url.protocol.startsWith('ws')) {
       return {
         type: ceeblueSignalingMimeType,
-        sourceType: 'webrtc',
+        sourceType: 'webrtc'
       };
     }
 
     const application = url.pathname.split('/')[1];
+
     if (application === 'webrtc') {
       return {
         type: 'application/sdp',
-        sourceType: 'webrtc',
+        sourceType: 'webrtc'
       };
     }
 
     const index = url.pathname.split('/').pop();
+
     if (index === 'index.m3u8') {
       const format = url.pathname.split('/')[0];
+
       if (format === 'cmaf') {
         return {
           type: 'application/vnd.apple.mpegurl',
-          sourceType: 'llhls',
+          sourceType: 'llhls'
         };
       }
 
       return {
         type: 'application/vnd.apple.mpegurl',
-        sourceType: 'hls',
+        sourceType: 'hls'
       };
     }
 
     if (index === 'index.mpd') {
       return {
         type: 'application/dash+xml',
-        sourceType: 'dash',
+        sourceType: 'dash'
       };
     }
   } catch {
@@ -245,7 +248,7 @@ function getOptionSources(option: CeeblueSourcesOptions): CeeblueSource[] {
 function expandSourceToURLSource(source: CeeblueSource): VideojsSourceObject|VideojsSourceObject[] {
   if (isSourceControllerURLSource(source)) {
     const urlSource: VideojsSourceObject = {
-      src: source.url,
+      src: source.url
     };
     const mimeType = (source as CeeblueAutoURLSource).mimeType;
     const type = (source as CeeblueHTTPURLSource).type;
@@ -272,12 +275,12 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
   const usedProtocols = source.protocols?.length ? source.protocols : protocols;
   const sources: VideojsSourceObject[] = [];
 
-  for (const protocol of usedProtocols) {
-    if (!protocols.includes(protocol)) {
-      throw new Error(`Unknown protocol ${protocol}`);
+  for (const proto of usedProtocols) {
+    if (!protocols.includes(proto)) {
+      throw new Error(`Unknown protocol ${proto}`);
     }
 
-    if (protocol === 'webrtc') {
+    if (proto === 'webrtc') {
       sources.push(buildWebRTCSource(source));
 
       continue
@@ -287,7 +290,8 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
     let format = '';
     let index = '';
     let type = '';
-    switch (protocol) {
+
+    switch (proto) {
     case 'hls':
       urlPorotocol = 'https';
       format = 'cmaf';
@@ -309,11 +313,13 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
     }
 
     let url = `${urlPorotocol}://${source.endPoint}/${format}/${source.streamName}`;
+
     if (index) {
       url += `/${index}`;
     }
 
     const query = source.query || new URLSearchParams();
+
     if (source.accessToken) {
       query.set('id', source.accessToken);
     }
@@ -323,7 +329,7 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
     sources.push({
       src: url,
       type,
-      sourceType: protocol,
+      sourceType: proto
     });
   }
 
@@ -331,19 +337,25 @@ function buildCloudSource(source: CeeblueCloudSource): VideojsSourceObject[] {
 }
 
 function buildWebRTCSource(source: CeeblueCloudSource): VideojsWebRTCSourceObject {
-  let protocol = 'wss';
+  let proto = 'wss';
   let mimeType: VideojsWebRTCSourceObject['type'] = ceeblueSignalingMimeType;
+
   if (source.settings?.webrtc?.signaling === 'whip') {
-    protocol = 'https';
+    proto = 'https';
     mimeType = 'application/sdp';
   }
 
-  return {
-    src: `${protocol}://${source.endPoint}/webrtc/${source.streamName}`,
+  const sourceObject: VideojsWebRTCSourceObject = {
+    src: `${proto}://${source.endPoint}/webrtc/${source.streamName}`,
     sourceType: 'webrtc',
-    type: mimeType,
-    iceServers: source.settings?.webrtc?.iceServers,
+    type: mimeType
+  };
+
+  if (source.settings?.webrtc?.iceServers) {
+    sourceObject.iceServers = source.settings.webrtc.iceServers;
   }
+
+  return sourceObject;
 }
 
 function isSourceControllerSingleSource(option: CeeblueSourcesOptions): option is CeeblueSingleSource {
