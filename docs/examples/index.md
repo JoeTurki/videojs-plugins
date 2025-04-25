@@ -4,7 +4,7 @@ This section provides practical examples of how to use Ceeblue Video.js Plugin i
 
 ## Available Examples
 
-- [Basic Setup](/examples/basic) - Simple setup with default configuration
+- [Simple player](/examples/simple) - Simple setup with default configuration
 
 ## Running Examples Locally
 

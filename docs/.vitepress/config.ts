@@ -43,7 +43,7 @@ export default defineConfig({
       {
         text: 'Examples',
         items: [
-          { text: 'Basic Setup', link: '/examples/basic' },
+          { text: 'Simple player', link: '/examples/simple' },
         ]
       },
       {

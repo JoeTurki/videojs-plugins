@@ -75,18 +75,6 @@ This example demonstrates the basic setup of Video.js with the Ceeblue plugin.
 ```
 :::
 
-
-## Configuration Options
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `streamName` | string | required | Name of the stream to play |
-| `endPoint` | string | required | URL of the Ceeblue server |
-| `accessToken` | string | required | Access token for the stream |
-| `protocols` | string[] | ['hls'] | Preferred protocols ('webrtc', 'whep', 'hls', 'dash', 'auto') |
-| `autoFallback` | boolean | true | Fallback to the next protocol if the current one fails |
-| `autoRetry` | boolean | true | Retry the current protocol if it fails |
-
 ## Best Practices
 
 1. Always include error handling.
