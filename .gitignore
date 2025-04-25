@@ -38,5 +38,5 @@ test/dist/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
 docs/.vitepress/temp/
-docs/.vitepress/public/*.bundle.js
+docs/public/*.bundle.js
 __screenshots__
