@@ -251,7 +251,7 @@ export class CeeblueVideoJSPlugin extends Plugin {
       this._player.one('loadedmetadata', () => {
         // Add a small delay to ensure quality levels are populated
         setTimeout(() => {
-          // this._addQualityButton();
+          this._addQualityButton();
         }, 500);
       });
     }

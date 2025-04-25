@@ -17,7 +17,8 @@ export default [
       '**/dist/**',
       '**/node_modules/**',
       '**/docs/public/dist/**',
-      '**/docs/.vitepress/**'
+      '**/docs/.vitepress/**',
+      '**/public/**'
     ]
   },
   {

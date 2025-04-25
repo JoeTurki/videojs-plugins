@@ -2,6 +2,7 @@
   "name": "@ceeblue/videojs-plugins",
   "version": "1.2.0",
   "description": "Videojs set of plugins for playing streams from the Ceeblue cloud. Supports WebRTC and WHEP, video quality switching, protocol fallbacks, and more.",
+  "browserslist": "chrome >= 63",
   "keywords": [
     "webrtc",
     "whip",
@@ -132,6 +133,7 @@
     "jsdoc": "^4.0.4",
     "jsdom": "^26.1.0",
     "lint-staged": "~15.2.0",
+    "markdown-it-container": "^4.0.0",
     "nyc": "^15.1.0",
     "postcss": "^8.5.3",
     "postcss-cli": "^8.3.1",
@@ -147,7 +149,8 @@
     "videojs-generate-postcss-config": "^1.0.1",
     "videojs-generator-verify": "^4.1.3",
     "videojs-standard": "^9.1.0",
-    "vitepress": "^0.1.1",
+    "vite-plugin-monaco-editor": "1.1.0",
+    "vitepress": "^1.6.3",
     "vitest": "^3.1.1",
     "webdriverio": "^9.12.5"
   },

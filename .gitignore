@@ -34,4 +34,9 @@ test/dist/
 .eslintcache
 .yo-rc.json
 
+# VitePress
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+docs/.vitepress/temp/
+
 __screenshots__
